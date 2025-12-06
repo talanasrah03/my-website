@@ -1,33 +1,167 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="icon" href="data:,">
-
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Iridescence FX</title>
 
+    <title>Iridescence FX</title>
     <link rel="stylesheet" href="css/intro.css" />
 </head>
 
 <body>
 
+<!-- ====================================================
+     BACKGROUND WRAPPER (Page1 + Page2)
+==================================================== -->
 <div class="bg-wrapper">
 
-    <!-- 1) BACKGROUND IMAGE -->
-    <img src="assets/bg-page1.png" class="bg-img" />
+    <!-- PAGE 1 -->
+    <div id="page1" class="page active">
+        <img src="assets/bg-page1.png" class="bg-img" />
+        <div class="ultra-gradient-layer"></div>
+        <div class="mouse-wave"></div>
+        <div class="texture-layer"></div>
+    </div>
 
-    <!-- 2) WEBGL EFFECT -->
-    <div id="fx-container"></div>
+    <!-- BURST FX -->
+    <div id="burst"></div>
 
-    <!-- 3) CIRCLE -->
-    <img src="assets/circle.svg" class="circle" />
+    <!-- MASK REVEAL -->
+    <div id="revealMask" class="page-reveal"></div>
+
+    <!-- PAGE 2 -->
+    <div id="page2" class="page">
+        <img src="assets/bg-page2.png" class="bg-img" />
+        <div class="ultra-gradient-layer"></div>
+        <div class="mouse-wave"></div>
+        <div class="texture-layer"></div>
+    </div>
+
+</div> <!-- END bg-wrapper -->
+
+
+
+<!-- ====================================================
+     ORB — ALWAYS ON TOP (Moved OUTSIDE bg-wrapper)
+==================================================== -->
+<div class="circle-wrapper">
+    <img src="assets/Circle.png" class="circle-base">
+    <canvas id="orb-canvas"></canvas>
 </div>
 
-<script src="js/iridescence.js"></script>
+
+
+<!-- ====================================================
+     PAGE 3 (FULLSCREEN + SCROLL SECTION)
+==================================================== -->
+<section id="page3" class="page3">
+
+    <img src="assets/bg-page3.png" class="bg-img" />
+    <div class="ultra-gradient-layer"></div>
+    <div class="mouse-wave"></div>
+    <div class="texture-layer"></div>
+
+    <div class="homepage-content">
+        <h1>Welcome to the Homepage</h1>
+        <p>Your site content goes here...</p>
+        <p>Scroll for more...</p>
+    </div>
+
+</section>
+
+
+
+<!-- ====================================================
+     INITIAL TRANSITION SCRIPT
+==================================================== -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+    const page3 = document.getElementById("page3");
+
+    // Hide page3 at first to prevent scroll
+    page3.style.display = "none";
+
+    const page1 = document.getElementById("page1");
+    const page2 = document.getElementById("page2");
+    const orb = document.querySelector(".circle-wrapper");
+    const burst = document.getElementById("burst");
+    const revealMask = document.getElementById("revealMask");
+
+    setTimeout(() => {
+
+        page1.style.transition = "opacity 0.7s ease, filter 0.7s ease";
+        page1.style.opacity = "0";
+        page1.style.filter = "blur(10px)";
+
+        orb.classList.add("exploding");
+        burst.style.opacity = "1";
+
+        setTimeout(() => {
+            page2.classList.add("active");
+            revealMask.classList.add("active");
+        }, 300);
+
+        setTimeout(() => {
+            orb.classList.remove("exploding");
+            orb.classList.add("returning");
+            burst.style.opacity = "0";
+        }, 1200);
+
+        setTimeout(() => {
+            orb.classList.remove("returning");
+        }, 3000);
+
+        setTimeout(() => {
+            revealMask.style.opacity = "0";
+        }, 1600);
+
+        /* ============================
+           Enable Scroll + Show Page3
+        ============================ */
+        setTimeout(() => {
+
+            // Show page3
+            page3.style.display = "block";
+
+            // Enable page scrolling again
+            document.documentElement.style.overflow = "auto";
+            document.body.style.overflow = "auto";
+
+        }, 3200);
+
+    }, 3000);
+
+});
+
+</script>
+
+
+
+
+<!-- ====================================================
+     PAGE 3 – SHOW ON SCROLL
+==================================================== -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+    const page3 = document.getElementById("page3");
+
+    window.addEventListener("scroll", () => {
+        if (window.scrollY > window.innerHeight * 0.3) {
+            page3.classList.add("active");
+        }
+    });
+
+});
+
+
+</script>
+
+
+
+<script src="js/mouse.js"></script>
+<script type="module" src="js/orb.js"></script>
 
 </body>
 </html>
-
-
-

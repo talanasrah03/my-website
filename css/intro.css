@@ -1,73 +1,229 @@
-html, body {
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-}
 
-/* ===========================
-   BACKGROUND WRAPPER
-=========================== */
+/* =====================================================
+   BASE LAYOUT
+===================================================== */
 .bg-wrapper {
     position: fixed;
-    top: 0;
-    left: 0;
-
-    width: 100vw;
-    height: 100vh;
-
+    inset: 0;
     overflow: hidden;
-    z-index: 0; /* خلفية */
+    z-index: 0; /* خلف كل شيء */
 }
 
-/* ===========================
-   BACKGROUND IMAGE
-=========================== */
+/* Base background image */
 .bg-img {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-
-    width: 100%;
-    height: 100%;
-
-    object-fit: cover;
-    transform: translate(-50%, -50%);
-
-    z-index: 1;
-    pointer-events: none;
-}
-
-/* ===========================
-   WEBGL FX (Canvas Container)
-=========================== */
-#fx-container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-
-    z-index: 3;
-    pointer-events: none;
-    overflow: hidden;
-}
-
-#fx-container canvas {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
-
-    opacity: 0.25;
-    mix-blend-mode: soft-light;
-    pointer-events: none;
-    z-index: 4;
+    object-fit: cover;
+    z-index: 1; /* أول طبقة */
+    
 }
 
-/* ===========================
-   APPLE-LIKE CIRCLE EFFECT
-=========================== */
-.circle {
+/* =====================================================
+   ULTRA GRADIENT BACKGROUND (MOVING)
+===================================================== */
+.ultra-gradient-layer {
+    position: absolute;
+    inset: 0;
+
+    /* 4 gradients قوية وواضحة */
+    background:
+    radial-gradient(circle at 20% 25%, rgba(255, 185, 160, 0.65), transparent 60%),
+    radial-gradient(circle at 78% 22%, rgba(150, 205, 255, 0.55), transparent 60%),
+    radial-gradient(circle at 28% 78%, rgba(185, 255, 200, 0.60), transparent 60%),
+    radial-gradient(circle at 75% 72%, rgba(255, 170, 215, 0.60), transparent 60%);
+
+
+    filter: blur(160px);
+    opacity: 0.85;   /* أعلى لتظهر أكثر */
+
+    z-index: 2;
+
+    /* الحركة القوية */
+    background-size: 250% 250%;
+    animation: ultraMove 10s ease-in-out infinite alternate;
+}
+
+@keyframes ultraMove {
+    0% {
+        background-position: 10% 10%;
+        transform: scale(1);
+    }
+    25% {
+        background-position: 90% 20%;
+        transform: scale(1.15);
+    }
+    50% {
+        background-position: 60% 90%;
+        transform: scale(1.25);
+    }
+    75% {
+        background-position: 20% 70%;
+        transform: scale(1.1);
+    }
+    100% {
+        background-position: 80% 40%;
+        transform: scale(1.2);
+    }
+}
+
+
+
+/* =====================================================
+   NOISE OVERLAY (VERY IMPORTANT FOR WEBFLOW LOOK)
+===================================================== */
+/* Mouse wave */
+.mouse-wave {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 3;
+
+    background: radial-gradient(
+        circle at center,
+        rgba(255, 200, 180, 0.35),
+        rgba(180, 220, 255, 0.25),
+        rgba(200, 255, 210, 0.20),
+        transparent 70%
+    );
+
+    filter: blur(70px);
+    mix-blend-mode: soft-light;
+
+    opacity: 0;
+    transform: scale(1);
+    transition: 
+        opacity 0.25s ease-out,
+        transform 0.35s ease-out;
+}
+
+
+/* Noise layer */
+.texture-layer {
+    position: absolute;
+    inset: 0;
+    background-image: url("../assets/noise.png");
+    opacity: 0.10;
+    mix-blend-mode: overlay;
+    z-index: 4; /* كان 40 — كان يمنع ظهور الموجة */
+}
+
+
+/* =========================================
+   PAGE SYSTEM (بدون تغيير أي تأثير)
+========================================= */
+.page {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+transform: scale(1);
+}
+
+
+.page.active {
+    opacity: 1;
+}
+
+/* خلفية الصفحة 2 تبدأ صغيرة وتكبر */
+.page.expanding {
+    transform: scale(0.15);
+    transform-origin: center center;
+    transition: transform 1.2s ease-out, opacity 1.2s ease-out;
+}
+
+/* ============================================
+   PAGE 2 REVEAL MASK (Chrome + Safari)
+============================================ */
+.page-reveal {
+    position: absolute;
+    inset: 0;
+    z-index: 999;
+
+    /* بداية: دائرة صغيرة جداً */
+    mask-image: radial-gradient(circle, black 0%, transparent 60%);
+    -webkit-mask-image: radial-gradient(circle, black 0%, transparent 60%);
+
+    mask-size: 0% 0%;
+    -webkit-mask-size: 0% 0%;
+
+    mask-repeat: no-repeat;
+    -webkit-mask-repeat: no-repeat;
+
+    mask-position: center;
+    -webkit-mask-position: center;
+
+    opacity: 0; /* مخفية بالبداية */
+    pointer-events: none;
+
+    transition:
+        mask-size 1.2s ease-out,
+        -webkit-mask-size 1.2s ease-out,
+        opacity 0.4s ease-out;
+}
+
+.page-reveal.active {
+    opacity: 1;
+
+    /* تكبير الدائرة لتمتد إلى كامل الشاشة */
+    mask-size: 250% 250%;
+    -webkit-mask-size: 250% 250%;
+}
+
+
+
+/* =====================================================
+   MULTI-COLOR DIRECTIONAL EXPLOSION (Slow Elegant)
+===================================================== */
+#burst {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+    z-index: 18;
+
+    background:
+        radial-gradient(circle at 25% 30%, rgba(255,180,150,0.60), transparent 60%),
+        radial-gradient(circle at 70% 75%, rgba(150,200,255,0.55), transparent 65%),
+        radial-gradient(circle at 40% 60%, rgba(190,255,180,0.50), transparent 60%),
+        radial-gradient(circle at 60% 35%, rgba(255,150,210,0.45), transparent 70%);
+
+    filter: blur(220px);
+
+    /* ✨ هنا السحر */
+    mix-blend-mode: screen;
+
+    /* ناعم جداً */
+    transition: opacity 2.2s ease-in-out !important;
+
+}
+
+.circle-wrapper.exploding {
+    transform: translate(-50%, -50%) scale(1.20); 
+    filter: blur(12px) brightness(1.5);
+
+    transition: transform 0.65s ease-out, 
+                filter 0.65s ease-out;
+}
+
+.circle-wrapper.returning {
+    transform: translate(-50%, -50%) scale(1); 
+    filter: blur(0px) brightness(1);
+
+    transition: transform 1.8s cubic-bezier(0.16, 1, 0.3, 1),
+                filter 1.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+
+
+
+
+
+
+/* =====================================================
+   ORBITAL SPHERE (ORB)
+===================================================== */
+.circle-wrapper {
     position: fixed;
     width: 580px;
     height: 580px;
@@ -75,40 +231,78 @@ html, body {
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    transform-origin: center;
+    transform-origin: center center;
+    border-radius: 50%;
+    overflow: hidden;
 
+    z-index: 99999 !important; /* أعلى من كل شيء */
+    pointer-events: auto;
+}
+
+
+/* PNG Circle image */
+.circle-base {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 11; /* فوق noise */
     pointer-events: none;
-    z-index: 10;
-
-    /* تأثير Apple */
-    animation:
-        circle-rotate 18s linear infinite,
-        circle-glow 4s ease-in-out infinite;
 }
 
-/* دوران بطيء مثل Apple */
-@keyframes circle-rotate {
-    0% {
-        transform: translate(-50%, -50%) rotate(0deg);
-    }
-    100% {
-        transform: translate(-50%, -50%) rotate(360deg);
-    }
+/* WebGL ORB Canvas */
+#orb-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 12; /* أعلى طبقة داخل orb */
+    pointer-events: none;
 }
 
-/* وميض ناعم / Breathing Glow */
-@keyframes circle-glow {
-    0% {
-        filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.20));
-        opacity: 0.95;
-    }
-    50% {
-        filter: drop-shadow(0 0 22px rgba(255, 255, 255, 0.55));
-        opacity: 1;
-    }
-    100% {
-        filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.20));
-        opacity: 0.95;
-    }
+
+#page3 {
+    position: relative;
+    width: 100vw;
+    min-height: 130vh; /* can be modified to make the website taller */ 
+    opacity: 0;
+    transition: opacity 1s ease-out;
+
+    z-index: 50; /* فوق Page2 وتحت ORB */
+    pointer-events: auto;
+    overflow-x: hidden !important; /* يمنع التزحلق يمين/يسار */
+    width: 100vw !important;       /* عرض مضبوط على الشاشة تماماً */
+    max-width: 100vw !important;   /* يمنع أي تمدد عرضي */
 }
+
+
+#page3.active {
+    opacity: 1;
+}
+* #page3 .bg-img {
+    position: absolute;
+    inset: 0;
+    width: 100vw;       /* تملأ العرض كامل حسب الجهاز */
+    height: 100vh;      /* تملأ الارتفاع كامل */
+    object-fit: cover;  /* أهم نقطة: تحافظ على الشكل بدون تمدد غلط */
+}  
+ 
+
+
+
+
+html, body {
+    overflow-x: hidden !important;
+}
+
+
+
+
+
+
+
+
+
+
+
 

@@ -1,12 +1,23 @@
-const bg = document.querySelector(".bg-img");
+const wave = document.querySelector(".mouse-wave");
 
+let timeout;
 document.addEventListener("mousemove", (e) => {
-    const x = (e.clientX - window.innerWidth / 2) / 45;
-    const y = (e.clientY - window.innerHeight / 2) / 45;
+    const x = (e.clientX / window.innerWidth) * 100;
+    const y = (e.clientY / window.innerHeight) * 100;
 
-    bg.style.transform =
-        `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) scale(0.59)`;
+    wave.style.backgroundPosition = `${x}% ${y}%`;
+    wave.style.opacity = 1;
+    wave.style.transform = "scale(1.4)";
+
+    clearTimeout(timeout);
+    timeout = setTimeout(() => {
+        wave.style.opacity = 0;
+        wave.style.transform = "scale(1)";
+    }, 120);
 });
+
+
+
 
 
 
